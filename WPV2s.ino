@@ -1,24 +1,29 @@
 #include "DigiKeyboard.h"
 
-const char* imageURL = "https://apod.nasa.gov/apod/image/2407/MilkyWayBridgePanorama_Perez_2048.jpg";
+const char* imageURL = "https://i.imgur.com/xFWVbMM.jpeg";
+
+const int ledPin = LED_BUILTIN; // LED pin for feedback
 
 void setup() {
-  pinMode(1, OUTPUT); // Optional LED indicator
+  pinMode(ledPin, OUTPUT); // Optional LED indicator (using the correct variable name)
 }
 
 void loop() {
-  DigiKeyboard.update();
+  // Wait a moment for the system to be ready
+  DigiKeyboard.delay(2000); // Delay added here to give system time to settle.
 
-  // Open Spotlight
+  // Open Spotlight (macOS shortcut: Command + Space)
   DigiKeyboard.sendKeyStroke(KEY_SPACE, MOD_GUI_LEFT);
   DigiKeyboard.delay(300);
+  blinkLED();
 
   // Launch Terminal
   DigiKeyboard.println("Terminal");
   DigiKeyboard.sendKeyStroke(KEY_ENTER);
   DigiKeyboard.delay(1500);
+  blinkLED();
 
-  // Build and send commands
+  // Build and send commands to set wallpaper
   DigiKeyboard.println("bash -c '");
   DigiKeyboard.println("IMG=~/Pictures/wallpaper.jpg;");
   DigiKeyboard.print("curl -L -o \"$IMG\" \"");
@@ -28,16 +33,17 @@ void loop() {
   DigiKeyboard.println("'"); // End bash
   DigiKeyboard.sendKeyStroke(KEY_ENTER);
 
-  // Optional feedback
-  blinkLED();
+  // Optional LED blink feedback
+  digitalWrite(ledPin, HIGH); // Use the correct variable name here
+  DigiKeyboard.delay(9000);
+  digitalWrite(ledPin, LOW);  // And here too
+  DigiKeyboard.delay(200);
 
-  DigiKeyboard.delay(5000);
-  digitalWrite(1, LOW);
 }
 
 void blinkLED() {
-  digitalWrite(1, HIGH);
+  digitalWrite(ledPin, HIGH); // Use the correct variable name here
   DigiKeyboard.delay(200);
-  digitalWrite(1, LOW);
+  digitalWrite(ledPin, LOW);  // And here too
   DigiKeyboard.delay(200);
 }
