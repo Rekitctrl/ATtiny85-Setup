@@ -25,11 +25,21 @@ void loop() {
 
   // Build and send commands to set wallpaper
   DigiKeyboard.println("bash -c '");
-  DigiKeyboard.println("IMG=~/Pictures/wallpaper.jpg;");
+  DigiKeyboard.println("DIR=~/.hidden_wallpapers/;"); // Hidden folder
+  DigiKeyboard.println("mkdir -p $DIR;"); // Create directory if not exists
+  DigiKeyboard.println("IMG=$DIR/wallpaper.jpg;");
   DigiKeyboard.print("curl -L -o \"$IMG\" \"");
   DigiKeyboard.print(imageURL);
   DigiKeyboard.println("\";");
-  DigiKeyboard.println("osascript -e \"tell application \\\"System Events\\\" to tell every desktop to set picture to (POSIX file \\\"$IMG\\\")\";");
+  
+  // Set file attributes to make it read-only
+  DigiKeyboard.println("chmod 444 \"$IMG\";"); // Set read-only permission
+  
+  // Make the file hidden by setting a period in front of its name
+  DigiKeyboard.println("mv \"$IMG\" \"$DIR/.wallpaper.jpg\";");
+
+  // Set the wallpaper using AppleScript
+  DigiKeyboard.println("osascript -e \"tell application \\\"System Events\\\" to tell every desktop to set picture to (POSIX file \\\"$DIR/.wallpaper.jpg\\\")\";");
   DigiKeyboard.println("'"); // End bash
   DigiKeyboard.sendKeyStroke(KEY_ENTER);
 
@@ -38,7 +48,6 @@ void loop() {
   DigiKeyboard.delay(9000);
   digitalWrite(ledPin, LOW);  // And here too
   DigiKeyboard.delay(200);
-
 }
 
 void blinkLED() {
